@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>MIguel Class</title>
+<link rel="icon" id="fav" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Unbounded:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07031a; --ink: #f3ecff; --dim: #a79cc9;
+  --mag: #ff2e97; --cyan: #27e8ff; --vio: #8a5cff;
+  --glass: rgba(255,255,255,.06); --line: rgba(255,255,255,.16);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  letter-spacing: normal; word-spacing: normal;
+  background: var(--bg); color: var(--ink); min-height: 100vh; overflow-x: hidden;
+  font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---------- background: sun + moving grid floor ---------- */
+.sky { position: fixed; inset: 0; z-index: -1; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 0%, #2a0f5e 0%, var(--bg) 65%); }
+.sun { position: absolute; left: 50%; top: 14vh; width: min(46vw, 420px); aspect-ratio: 1; transform: translateX(-50%);
+  border-radius: 50%; background: linear-gradient(180deg, #ffd23f 0%, var(--mag) 55%, var(--vio) 100%);
+  filter: blur(1px); opacity: .85;
+  -webkit-mask: repeating-linear-gradient(180deg, #000 0 14px, transparent 14px 18px);
+          mask: repeating-linear-gradient(180deg, #000 0 14px, transparent 14px 18px);
+  -webkit-mask-size: 100% 100%; }
+.sun::after { content: ""; position: absolute; inset: 0; background: var(--bg);
+  -webkit-mask: linear-gradient(180deg, transparent 55%, #000 100%); mask: linear-gradient(180deg, transparent 55%, #000 100%); opacity: .0; }
+.floor { position: absolute; left: -50%; right: -50%; bottom: 0; height: 52vh;
+  transform: perspective(380px) rotateX(62deg); transform-origin: 50% 100%;
+  background-image:
+    linear-gradient(var(--vio) 2px, transparent 2px),
+    linear-gradient(90deg, var(--vio) 2px, transparent 2px);
+  background-size: 70px 70px; opacity: .45;
+  -webkit-mask: linear-gradient(180deg, transparent 0%, #000 70%); mask: linear-gradient(180deg, transparent 0%, #000 70%);
+  animation: drive 2.4s linear infinite; }
+@keyframes drive { to { background-position: 0 70px; } }
+
+/* ---------- header ---------- */
+.wrap { max-width: 1040px; margin: 0 auto; padding: 44px 20px 80px; }
+.logo { font-family: "Unbounded", system-ui, sans-serif; font-weight: 900; margin: 0 0 6px;
+  font-size: clamp(2.1rem, 8.5vw, 4.4rem); line-height: 1.15; letter-spacing: 0; word-spacing: 0.08em; padding-bottom: .08em;
+  background: linear-gradient(180deg, #fff 0%, #d8c8ff 40%, var(--cyan) 52%, var(--mag) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 22px rgba(255,46,151,.55)); position: relative; display: inline-block; cursor: default; }
+.logo::before, .logo::after { content: attr(data-t); position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; pointer-events: none; }
+.logo:hover::before { opacity: .9; color: var(--cyan); -webkit-text-fill-color: var(--cyan); transform: translate(-4px, 1px); mix-blend-mode: screen; }
+.logo:hover::after  { opacity: .9; color: var(--mag);  -webkit-text-fill-color: var(--mag);  transform: translate(4px, -1px); mix-blend-mode: screen; }
+.tag { color: var(--dim); margin: 0 0 30px; font-size: 1.05rem; }
+
+/* ---------- tabs ---------- */
+nav { display: flex; gap: 8px; overflow-x: auto; padding: 6px; margin-bottom: 30px;
+  background: var(--glass); border: 1px solid var(--line); border-radius: 18px;
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+nav button { flex: 1 0 auto; font: 600 .95rem "DM Sans", system-ui, sans-serif; color: var(--dim); background: transparent;
+  border: 0; border-radius: 13px; padding: 12px 18px; cursor: pointer; white-space: nowrap; transition: color .15s, background .15s; }
+nav button:hover { color: var(--ink); }
+nav button[aria-selected="true"] { color: #12062e; background: linear-gradient(90deg, var(--cyan), var(--mag)); box-shadow: 0 0 22px rgba(39,232,255,.45); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+
+section[hidden] { display: none; }
+h2 { font-family: "Unbounded", system-ui, sans-serif; font-weight: 600; font-size: 1.35rem; letter-spacing: 0; line-height: 1.25; margin: 0 0 8px; }
+.lead { color: var(--dim); margin: 0 0 22px; max-width: 62ch; line-height: 1.5; }
+
+/* ---------- tiles ---------- */
+.search { width: 100%; max-width: 360px; margin-bottom: 22px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 18px; perspective: 800px; }
+a.tile { --h: 280; display: flex; flex-direction: column; align-items: center; gap: 12px; text-decoration: none; color: var(--ink);
+  padding: 20px 12px 16px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .12s ease-out, box-shadow .2s, border-color .2s; }
+a.tile:hover { border-color: hsl(var(--h) 100% 65%); box-shadow: 0 0 28px hsl(var(--h) 100% 60% / .55), inset 0 0 18px hsl(var(--h) 100% 60% / .18); }
+.icon { width: 82px; height: 82px; border-radius: 22px; display: grid; place-items: center; font-size: 2.7rem; overflow: hidden;
+  background: linear-gradient(145deg, hsl(var(--h) 95% 62%), hsl(calc(var(--h) + 50) 95% 45%)); box-shadow: 0 8px 18px hsl(var(--h) 90% 40% / .5); }
+.icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.name { font-weight: 600; text-align: center; line-height: 1.2; }
+.desc { color: var(--dim); font-size: .85rem; text-align: center; line-height: 1.35; }
+.wide { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.wide a.tile { flex-direction: row; text-align: left; align-items: center; padding: 16px; gap: 14px; }
+.wide .icon { width: 58px; height: 58px; font-size: 1.9rem; border-radius: 16px; flex: none; }
+.wide .name, .wide .desc { text-align: left; }
+.empty { grid-column: 1 / -1; color: var(--dim); padding: 28px 0; }
+
+/* ---------- forms ---------- */
+.panel { background: var(--glass); border: 1px solid var(--line); border-radius: 20px; padding: 22px; max-width: 760px;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+label { display: block; font-weight: 600; font-size: .9rem; margin: 14px 0 6px; }
+label:first-child { margin-top: 0; }
+input, textarea, select { width: 100%; font: inherit; color: var(--ink); background: rgba(5,2,20,.7);
+  border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; }
+textarea { min-height: 170px; resize: vertical; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .88rem; line-height: 1.45; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.btn { font: 600 .95rem "DM Sans", system-ui, sans-serif; color: #12062e; border: 0; border-radius: 12px; padding: 12px 20px; cursor: pointer;
+  background: linear-gradient(90deg, var(--cyan), var(--mag)); transition: filter .15s, transform .1s; }
+.btn:hover { filter: brightness(1.12); } .btn:active { transform: scale(.97); }
+.btn.ghost { color: var(--ink); background: transparent; border: 1px solid var(--line); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.status { margin-top: 14px; min-height: 1.2em; color: var(--cyan); }
+.sep { height: 1px; background: var(--line); margin: 26px 0 20px; }
+iframe#out { display: none; width: 100%; height: min(70vh, 640px); margin-top: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.drop { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; margin: 0; padding: 34px 16px; cursor: pointer;
+  border: 2px dashed var(--line); border-radius: 16px; color: var(--dim); font-weight: 600; transition: border-color .15s, background .15s; }
+.drop:hover, .drop.over { border-color: var(--cyan); background: rgba(39,232,255,.07); color: var(--ink); }
+.dropicon { font-size: 2.2rem; }
+.btn:disabled { opacity: .35; cursor: not-allowed; filter: none; transform: none; }
+
+iframe#sugFrame { display: block; width: 100%; max-width: 760px; height: min(80vh, 760px); border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+iframe#sugFrame[hidden] { display: none; }
+@media (max-width: 560px) { .two { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .floor { animation: none; } a.tile { transition: none; transform: none; } }
+</style>
+</head>
+<body>
+<div class="sky"><div class="sun"></div><div class="floor"></div></div>
+
+<div class="wrap">
+  <h1 class="logo" data-t="MIguel Class">MIguel Class</h1>
+  <p class="tag">Games, tools and more. Pick a tab.</p>
+
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-tab="games">Games</button>
+    <button role="tab" data-tab="proxies">Proxies</button>
+    <button role="tab" data-tab="ai">AI</button>
+    <button role="tab" data-tab="inject">HTML Tab Inject</button>
+    <button role="tab" data-tab="suggest">Suggest Games</button>
+  </nav>
+
+  <section data-panel="games">
+    <input class="search" id="q" type="search" placeholder="Search games" aria-label="Search games">
+    <div class="grid" id="gamesGrid"></div>
+  </section>
+
+  <section data-panel="proxies" hidden>
+    <h2>Proxies</h2>
+    <p class="lead">Pick one. If a link is blocked, try another.</p>
+    <div class="grid wide" id="proxiesGrid"></div>
+  </section>
+
+  <section data-panel="ai" hidden>
+    <h2>AI</h2>
+    <p class="lead">Quick links to AI tools. They open in a new tab.</p>
+    <div class="grid wide" id="aiGrid"></div>
+  </section>
+
+  <section data-panel="inject" hidden>
+    <h2>HTML Tab Inject</h2>
+    <p class="lead">Add an HTML file, then choose how to open it.</p>
+    <div class="panel">
+      <label class="drop" id="drop" for="file">
+        <span class="dropicon">📂</span>
+        <span id="dropText">Click to add an HTML file, or drop it here</span>
+      </label>
+      <input type="file" id="file" accept=".html,.htm,text/html" hidden>
+      <div class="row">
+        <button class="btn" id="runHere" disabled>Open in this tab</button>
+        <button class="btn" id="runBlank" disabled>Open in about:blank</button>
+        <button class="btn ghost" id="runFull" disabled>Fullscreen</button>
+        <button class="btn ghost" id="clearOut" disabled>Close</button>
+      </div>
+      <div class="status" id="injStatus" role="status"></div>
+      <iframe id="out" title="Your HTML file" allow="fullscreen; clipboard-write"></iframe>
+    </div>
+    <div class="panel" style="margin-top:22px">
+      <label for="preset">Tab disguise</label>
+      <select id="preset">
+        <option value="">Choose a preset</option>
+        <option value="Google Docs|📄">Google Docs</option>
+        <option value="Classroom|🎓">Classroom</option>
+        <option value="Google Drive|📁">Google Drive</option>
+        <option value="Calculator|🧮">Calculator</option>
+      </select>
+      <div class="two">
+        <div><label for="ctitle">Custom title</label><input id="ctitle" placeholder="Tab title"></div>
+        <div><label for="cicon">Custom icon (emoji)</label><input id="cicon" placeholder="📄" maxlength="4"></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="applyCloak">Apply</button>
+        <button class="btn ghost" id="resetCloak">Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <section data-panel="suggest" hidden>
+    <h2>Suggest Games</h2>
+    <p class="lead">Want a game added? Fill out the form.</p>
+    <iframe id="sugFrame" title="Suggest a game" loading="lazy" hidden>Loading…</iframe>
+    <div class="panel" id="sugEmpty" hidden>
+      <p class="lead" style="margin:0">The suggestion form isn't connected yet. Add your Google Form link to <code>SUGGEST_FORM</code> in index.html.</p>
+    </div>
+    <p class="lead" style="margin:12px 0 0;font-size:.88rem" id="sugAlt" hidden><a id="sugLink" href="#" target="_blank" rel="noopener" style="color:var(--cyan)">Form not showing? Open it in a new tab.</a></p>
+  </section>
+</div>
+
+<script>
+/* ==================================================================
+   EDIT THESE LISTS.  icon = emoji OR image path/URL.  link opens in a new tab.
+   ================================================================== */
+const GAMES = [
+  { name: "Happy Wheels", icon: "🚲", link: "https://burnmaker78-cmd.github.io/math-for-fun/" },
+  { name: "Evil Nun", icon: "👻", link: "https://burnmaker78-cmd.github.io/seano-pry-mango/" },
+  { name: "Evil Nun 2", icon: "😈", link: "https://burnmaker78-cmd.github.io/resid-evil-movie/" },
+  { name: "Hello Neighbor", icon: "🏠", link: "https://burnmaker78-cmd.github.io/calc-for-smart/" },
+  { name: "Block Blast", icon: "🟦", link: "https://burnmaker78-cmd.github.io/children-of-khan/" },
+  { name: "Eaglercraft 1", icon: "⛏️", link: "https://burnmaker78-cmd.github.io/statistics-prob-calc/" },
+  { name: "Eaglercraft 2", icon: "⛏️", link: "https://burnmaker78-cmd.github.io/trig-identities-ref/" },
+  { name: "Eaglercraft 3", icon: "⛏️", link: "https://burnmaker78-cmd.github.io/algebra-matrix-solver/" },
+  { name: "Eaglercraft 4", icon: "⛏️", link: "https://burnmaker78-cmd.github.io/geometry-homework-help/" },
+  { name: "Eaglercraft 5", icon: "⛏️", link: "https://burnmaker78-cmd.github.io/calculator-for-school/" },
+  { name: "Baseball Stars", icon: "⚾", link: "https://burnmaker78-cmd.github.io/newyork-times-news/" },
+  { name: "Friday Night Funkin", icon: "🎤", link: "https://burnmaker78-cmd.github.io/cool-math-homework/" },
+  { name: "BitLife", icon: "🧬", link: "https://burnmaker78-cmd.github.io/Gym-Workout-Videos/" },
+  { name: "Seraph Games", icon: "🎮", link: "https://burnmaker78-cmd.github.io/school-science-rock/games/index.html" },
+  { name: "Cookie Clicker", icon: "🍪", link: "https://burnmaker78-cmd.github.io/exponential-growth-tracker/" },
+  { name: "Retro Bowl", icon: "🏈", link: "https://burnmaker78-cmd.github.io/entre-shop-market/" },
+  { name: "Geometry Dash", icon: "🔷", link: "https://burnmaker78-cmd.github.io/pytha-theorem-calc/" },
+  { name: "Slope", icon: "🛷", link: "https://burnmaker78-cmd.github.io/math-algebra1-calc/" },
+  { name: "BiteArcade", icon: "🍔", link: "https://burnmaker78-cmd.github.io/miguel-cool-arcade/" }
+];
+const PROXIES = [
+  { name: "Opium",     icon: "💊", link: "https://cdn.jsdelivr.net/npm/opiumbest/index.svg", desc: "Opens in a new tab" },
+  { name: "Miguelbest", icon: "🌐", link: "https://cdn.jsdelivr.net/gh/burnmaker78-cmd/miguelbest@50deee7/study.svg", desc: "Opens in a new tab" },
+  { name: "Novene",    icon: "🛰️", link: "https://cdn.jsdelivr.net/gh/noveneubg/svg@c129a34/study.svg", desc: "Opens in a new tab" }
+];
+const AI_TOOLS = [
+  { name: "Claude",  icon: "✨", link: "https://claude.ai",                desc: "Chat, write, code, explain" },
+  { name: "ChatGPT", icon: "💬", link: "https://chatgpt.com",              desc: "Chat and brainstorm" },
+  { name: "Gemini",  icon: "🔮", link: "https://gemini.google.com",        desc: "Google's AI assistant" }
+];
+/* Suggest Games: paste your Google Form link here (see instructions).
+   Use the embed link: Form > Send > the <> tab > copy the src="..." address. */
+const SUGGEST_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfGGoI_PV6Sidova96d4OfIJBhWScXfTqPhPYsejQsKL2OTbw/viewform?embedded=true";
+/* ================================================================== */
+
+const $ = s => document.querySelector(s);
+const isImg = s => /^(https?:)?\/\//.test(s) || /\.(png|jpe?g|gif|webp|svg)$/i.test(s);
+
+function tile(item, i) {
+  const a = document.createElement("a");
+  a.className = "tile"; a.href = item.link; a.target = "_blank"; a.rel = "noopener";
+  a.style.setProperty("--h", (i * 47 + 280) % 360);
+  const ic = document.createElement("div"); ic.className = "icon";
+  if (isImg(item.icon)) { const im = document.createElement("img"); im.src = item.icon; im.alt = ""; im.loading = "lazy"; ic.appendChild(im); }
+  else ic.textContent = item.icon;
+  const box = document.createElement("div");
+  const nm = document.createElement("div"); nm.className = "name"; nm.textContent = item.name; box.appendChild(nm);
+  if (item.desc) { const d = document.createElement("div"); d.className = "desc"; d.textContent = item.desc; box.appendChild(d); }
+  a.append(ic, box);
+  a.addEventListener("pointermove", e => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || e.pointerType !== "mouse") return;
+    const r = a.getBoundingClientRect();
+    a.style.setProperty("--ry", ((e.clientX - r.left) / r.width - .5) * 14 + "deg");
+    a.style.setProperty("--rx", (.5 - (e.clientY - r.top) / r.height) * 14 + "deg");
+  });
+  a.addEventListener("pointerleave", () => { a.style.removeProperty("--rx"); a.style.removeProperty("--ry"); });
+  return a;
+}
+function fill(el, list, emptyMsg) {
+  el.innerHTML = "";
+  if (!list.length) { const p = document.createElement("p"); p.className = "empty"; p.textContent = emptyMsg; el.appendChild(p); return; }
+  list.forEach(item => el.appendChild(tile(item, GAMES.indexOf(item) >= 0 ? GAMES.indexOf(item) : list.indexOf(item))));
+}
+function renderGames() {
+  const t = $("#q").value.trim().toLowerCase();
+  fill($("#gamesGrid"), GAMES.filter(g => g.name.toLowerCase().includes(t)), GAMES.length ? "No games match that search." : "Add games to the GAMES list in index.html.");
+}
+renderGames();
+fill($("#proxiesGrid"), PROXIES, "Add links to the PROXIES list in index.html.");
+fill($("#aiGrid"), AI_TOOLS, "Add links to the AI_TOOLS list in index.html.");
+$("#q").addEventListener("input", renderGames);
+
+/* ---------- tabs ---------- */
+const tabs = [...document.querySelectorAll("#tabs button")];
+function show(name) {
+  if (!tabs.some(b => b.dataset.tab === name)) name = "games";
+  tabs.forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name));
+  document.querySelectorAll("section[data-panel]").forEach(s => s.hidden = s.dataset.panel !== name);
+}
+tabs.forEach(b => b.addEventListener("click", () => { show(b.dataset.tab); try { history.replaceState(null, "", "#" + b.dataset.tab); } catch (e) {} }));
+show(location.hash.slice(1) || "games");
+addEventListener("hashchange", () => show(location.hash.slice(1) || "games"));
+
+/* ---------- HTML Tab Inject ---------- */
+let injHtml = "", injName = "";
+const inj = $("#injStatus"), frame = $("#out");
+function loadFile(f) {
+  if (!f) return;
+  if (!/\.html?$/i.test(f.name)) { inj.textContent = "That isn't an .html file. Pick a .html or .htm file."; return; }
+  const r = new FileReader();
+  r.onload = () => {
+    injHtml = r.result; injName = f.name;
+    $("#dropText").textContent = "Loaded: " + f.name + " (click to change)";
+    ["runHere", "runBlank", "runFull", "clearOut"].forEach(id => $("#" + id).disabled = false);
+    inj.textContent = "Ready. Choose how to open it.";
+  };
+  r.onerror = () => { inj.textContent = "Couldn't read that file. Try again."; };
+  r.readAsText(f);
+}
+$("#file").addEventListener("change", e => loadFile(e.target.files[0]));
+const drop = $("#drop");
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => loadFile(e.dataTransfer.files[0]));
+function showHere() { frame.srcdoc = injHtml; frame.style.display = "block"; }
+$("#runHere").addEventListener("click", () => { showHere(); frame.scrollIntoView({ behavior: "smooth", block: "nearest" }); inj.textContent = "Running " + injName + " in this tab."; });
+$("#runFull").addEventListener("click", () => { showHere(); (frame.requestFullscreen || frame.webkitRequestFullscreen || function () {}).call(frame); });
+$("#clearOut").addEventListener("click", () => { frame.srcdoc = ""; frame.style.display = "none"; inj.textContent = "Closed."; });
+$("#runBlank").addEventListener("click", () => {
+  const w = window.open("about:blank", "_blank");
+  if (!w) { inj.textContent = "Your browser blocked the new tab. Allow pop-ups for this site and try again."; return; }
+  w.document.open(); w.document.write(injHtml); w.document.close();
+  inj.textContent = "Opened " + injName + " in an about:blank tab.";
+});
+const emojiFav = e => "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">' + e + '</text></svg>');
+const origTitle = document.title, origFav = $("#fav").href;
+$("#preset").addEventListener("change", e => { const [t, i] = e.target.value.split("|"); if (t) { $("#ctitle").value = t; $("#cicon").value = i; } });
+$("#applyCloak").addEventListener("click", () => {
+  if ($("#ctitle").value.trim()) document.title = $("#ctitle").value.trim();
+  if ($("#cicon").value.trim()) $("#fav").href = emojiFav($("#cicon").value.trim());
+});
+$("#resetCloak").addEventListener("click", () => { document.title = origTitle; $("#fav").href = origFav; $("#ctitle").value = ""; $("#cicon").value = ""; $("#preset").value = ""; });
+
+/* ---------- Suggest Games ---------- */
+if (SUGGEST_FORM) {
+  $("#sugFrame").src = SUGGEST_FORM; $("#sugFrame").hidden = false;
+  $("#sugLink").href = SUGGEST_FORM.replace("?embedded=true", ""); $("#sugAlt").hidden = false;
+} else { $("#sugEmpty").hidden = false; }
+</script>
+</body>
+</html>
