@@ -128,6 +128,7 @@ iframe#sugFrame[hidden] { display: none; }
 
   <nav role="tablist" id="tabs">
     <button role="tab" data-tab="games">Games</button>
+    <button role="tab" data-tab="movies">Movies</button>
     <button role="tab" data-tab="proxies">Proxies</button>
     <button role="tab" data-tab="ai">AI</button>
     <button role="tab" data-tab="inject">HTML Tab Inject</button>
@@ -137,6 +138,12 @@ iframe#sugFrame[hidden] { display: none; }
   <section data-panel="games">
     <input class="search" id="q" type="search" placeholder="Search games" aria-label="Search games">
     <div class="grid" id="gamesGrid"></div>
+  </section>
+
+  <section data-panel="movies" hidden>
+    <h2>Movies</h2>
+    <p class="lead">Pick one. If a link is blocked, try the unblockable alt.</p>
+    <div class="grid wide" id="moviesGrid"></div>
   </section>
 
   <section data-panel="proxies" hidden>
@@ -225,6 +232,10 @@ const GAMES = [
   { name: "Slope", icon: "🛷", link: "https://burnmaker78-cmd.github.io/math-algebra1-calc/" },
   { name: "BiteArcade", icon: "🍔", link: "https://burnmaker78-cmd.github.io/miguel-cool-arcade/" }
 ];
+const MOVIES = [
+  { name: "AJ's Movies", icon: "🎬", link: "https://movs-by-mig.bonto.run/", desc: "Opens in a new tab" },
+  { name: "AJ's Movies (unblockable alt)", icon: "🍿", link: "https://burnmaker78-cmd.github.io/ajs-miguel-movs/", desc: "Opens in a new tab" }
+];
 const PROXIES = [
   { name: "Opium",     icon: "💊", link: "https://cdn.jsdelivr.net/npm/opiumbest/index.svg", desc: "Opens in a new tab" },
   { name: "Miguelbest", icon: "🌐", link: "https://cdn.jsdelivr.net/gh/burnmaker78-cmd/miguelbest@50deee7/study.svg", desc: "Opens in a new tab" },
@@ -273,6 +284,7 @@ function renderGames() {
   fill($("#gamesGrid"), GAMES.filter(g => g.name.toLowerCase().includes(t)), GAMES.length ? "No games match that search." : "Add games to the GAMES list in index.html.");
 }
 renderGames();
+fill($("#moviesGrid"), MOVIES, "Add links to the MOVIES list in index.html.");
 fill($("#proxiesGrid"), PROXIES, "Add links to the PROXIES list in index.html.");
 fill($("#aiGrid"), AI_TOOLS, "Add links to the AI_TOOLS list in index.html.");
 $("#q").addEventListener("input", renderGames);
